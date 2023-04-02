@@ -31,41 +31,29 @@ class googleDrive {
     };
   }
   async downloadAPI(range, session) {
+    await this.setAccessToken();
+
+    let requestOption = {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${this.config.access_token}`,
+            Range: range,
+        },
+    };
+
     if (session.transcoded == true && session.cookie) {
-      let requestOption = {
-        method: "GET",
-        headers: {
-          Cookie: session.cookie,
-          Range: range,
-        },
-      };
-      let resp = await fetch(session.url, requestOption);
-      let { headers } = (resp = new Response(resp.body, resp));
-      headers.append("Access-Control-Allow-Origin", "*");
-      headers.set("Content-Disposition", "inline");
-      headers.set("Access-Control-Allow-Headers", "*");
-      headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
-      headers.set("pragma", "no-cache");
-      return resp;
-    } else {
-      await this.setAccessToken();
-      let requestOption = {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${this.config.access_token}`,
-          Range: range,
-        },
-      };
-      let resp = await fetch(session.url, requestOption);
-      let { headers } = (resp = new Response(resp.body, resp));
-      headers.append("Access-Control-Allow-Origin", "*");
-      headers.set("Content-Disposition", "inline");
-      headers.set("Access-Control-Allow-Headers", "*");
-      headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
-      headers.set("pragma", "no-cache");
-      return resp;
+        requestOption.headers.Cookie = session.cookie;
     }
-  }
+
+    let resp = await fetch(session.url, requestOption);
+    let { headers } = (resp = new Response(resp.body, resp));
+    headers.append("Access-Control-Allow-Origin", "*");
+    headers.set("Content-Disposition", "inline");
+    headers.set("Access-Control-Allow-Headers", "*");
+    headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    headers.set("pragma", "no-cache");
+    return resp;
+}
 
   async setAccessToken() {
     if (
