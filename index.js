@@ -63,7 +63,7 @@ class googleDrive {
       const obj = await this.getAccessToken();
       if (obj.access_token != undefined) {
         this.config.access_token = obj.access_token;
-        this.config.token_expiry = obj.token_expiry;
+        this.config.token_expiry = Date.now() + obj.expires_in * 1000;
       }
     }
   }
